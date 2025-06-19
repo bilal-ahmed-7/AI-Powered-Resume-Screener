@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Resume Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Resume Details</h1>
+        <div>
+            <a href="{{ url_for('resume.list_resumes') }}" class="btn btn-secondary me-2">Back to Resumes</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Basic Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Name:</strong> {{ resume.candidate_name }}</p>
+                    <p><strong>Email:</strong> {{ resume.email }}</p>
+                    <p><strong>Phone:</strong> {{ resume.phone }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>File:</strong> {{ resume.filename }}</p>
+                    <p><strong>Upload Date:</strong> {{ resume.upload_date.strftime('%Y-%m-%d') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Skills</h5>
+                </div>
+                <div class="card-body">
+                    {% if resume.skills %}
+                        <ul class="list-group list-group-flush">
+                            {% for skill in resume.skills.split(',') %}
+                                <li class="list-group-item">{{ skill }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No skills listed</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Experience</h5>
+                </div>
+                <div class="card-body">
+                    {% if resume.experience %}
+                        <p>{{ resume.experience|safe }}</p>
+                    {% else %}
+                        <p class="text-muted">No experience listed</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Education</h5>
+                </div>
+                <div class="card-body">
+                    {% if resume.education %}
+                        <p>{{ resume.education|safe }}</p>
+                    {% else %}
+                        <p class="text-muted">No education listed</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback from Admins -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Feedback from Administrators</h5>
+        </div>
+        <div class="card-body">
+            {% if feedback_messages %}
+                <div class="list-group">
+                    {% for feedback in feedback_messages %}
+                        <div class="list-group-item list-group-item-action {% if not feedback.read %}list-group-item-warning{% endif %}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">From: {{ feedback.admin.name or 'Administrator' }}</h6>
+                                <small>{{ feedback.created_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                            <p class="mb-1">{{ feedback.message }}</p>
+                            {% if not feedback.read %}
+                                <span class="badge bg-warning text-dark">New</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">You have not received any feedback on this resume yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Matching functionality removed - admin only feature -->
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this resume? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ url_for('resume.delete_resume', resume_id=resume.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

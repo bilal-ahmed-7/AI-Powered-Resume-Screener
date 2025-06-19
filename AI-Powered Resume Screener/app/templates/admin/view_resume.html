@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}View Resume{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Resume Details</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Resume Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Candidate Name:</div>
+                        <div class="col-md-8">{{ resume.candidate_name or 'Not specified' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Email:</div>
+                        <div class="col-md-8">{{ resume.email or 'Not specified' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Phone:</div>
+                        <div class="col-md-8">{{ resume.phone or 'Not specified' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Uploaded By:</div>
+                        <div class="col-md-8">{{ resume.user.email }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Upload Date:</div>
+                        <div class="col-md-8">{{ resume.upload_date.strftime('%Y-%m-%d %H:%M') }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Filename:</div>
+                        <div class="col-md-8">{{ resume.filename }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Skills & Experience</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-12 fw-bold">Skills:</div>
+                        <div class="col-md-12">
+                            {% if resume.skills %}
+                                {% set skill_list = resume.skills.split(',') %}
+                                {% for skill in skill_list %}
+                                    <span class="badge bg-info me-1 mb-1">{{ skill.strip() }}</span>
+                                {% endfor %}
+                            {% else %}
+                                No skills specified
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-12 fw-bold">Experience:</div>
+                        <div class="col-md-12">
+                            <p>{{ resume.experience or 'No experience information available' }}</p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-12 fw-bold">Education:</div>
+                        <div class="col-md-12">
+                            <p>{{ resume.education or 'No education information available' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Match with Jobs</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for job in jobs %}
+                        <a href="{{ url_for('admin.match_resume_to_job', resume_id=resume.id, job_id=job.id) }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ job.title }}</h6>
+                                <small>{{ job.created_date.strftime('%m/%d/%Y') }}</small>
+                            </div>
+                            <p class="mb-1">{{ job.company }}</p>
+                            <small>{{ job.location }}</small>
+                        </a>
+                        {% else %}
+                        <div class="list-group-item">No jobs available for matching</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Send Feedback to User</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('admin.send_feedback', resume_id=resume.id) }}" method="POST">
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="3" required placeholder="Enter your feedback about this resume..."></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning">Send Feedback</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Previous Feedback</h5>
+                </div>
+                <div class="card-body">
+                    {% if previous_feedback %}
+                        <div class="list-group">
+                            {% for feedback in previous_feedback %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">From: {{ feedback.admin.name or feedback.admin.email }}</h6>
+                                        <small>{{ feedback.created_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ feedback.message }}</p>
+                                    <small class="text-muted">Status: {% if feedback.read %}Read{% else %}Unread{% endif %}</small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No feedback has been sent for this resume yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Generate Offer Letter</h5>
+                </div>
+                <div class="card-body">
+                    <p>Select a job position to generate an offer letter for this candidate:</p>
+                    <div class="list-group">
+                        {% for job in jobs %}
+                        <a href="{{ url_for('admin.approve_resume', resume_id=resume.id, job_id=job.id) }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ job.title }}</h6>
+                                <small>{{ job.created_date.strftime('%m/%d/%Y') }}</small>
+                            </div>
+                            <p class="mb-1">{{ job.company }}</p>
+                            <small>{{ job.location }}</small>
+                        </a>
+                        {% else %}
+                        <div class="list-group-item">No jobs available for offer letter generation</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('admin.all_resumes') }}" class="btn btn-secondary">Back to All Resumes</a>
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Admin PIN Verification | AI-Powered Resume Screener{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-danger text-white py-3">
+                    <h4 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Admin PIN Verification</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-warning mb-4">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>Security Check:</strong> Please enter the admin PIN to access the admin dashboard.
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('auth.admin_pin') }}">
+                        <div class="mb-4">
+                            <label for="pin" class="form-label">Admin PIN</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-key text-secondary"></i>
+                                </span>
+                                <input type="password" class="form-control" id="pin" name="pin" placeholder="Enter admin PIN" required autofocus>
+                            </div>
+                            <div class="form-text text-muted">
+                                Enter the 4-digit admin PIN to continue
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger py-2">
+                                <i class="bi bi-unlock me-2"></i>Verify PIN
+                            </button>
+                            <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Login
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

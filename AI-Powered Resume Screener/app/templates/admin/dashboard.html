@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    <p class="text-muted">{{ current_date }}</p>
+    
+    <div class="row">
+        <!-- Stats Cards -->
+        <div class="col-md-3 mb-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <h2 class="display-4">{{ user_count }}</h2>
+                    <p class="card-text">{{ client_count }} Clients, {{ admin_count }} Admins</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Jobs</h5>
+                    <h2 class="display-4">{{ job_count }}</h2>
+                    <p class="card-text">Job postings in the system</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Resumes</h5>
+                    <h2 class="display-4">{{ resume_count }}</h2>
+                    <p class="card-text">Resumes uploaded by users</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <h5 class="card-title">Admin Actions</h5>
+                    <div class="list-group">
+                        <a href="{{ url_for('admin.users') }}" class="list-group-item list-group-item-action">Manage Users</a>
+                        <a href="{{ url_for('admin.all_jobs') }}" class="list-group-item list-group-item-action">Manage Jobs</a>
+                        <a href="{{ url_for('admin.all_resumes') }}" class="list-group-item list-group-item-action">View All Resumes</a>
+                        <a href="{{ url_for('admin.all_offer_letters') }}" class="list-group-item list-group-item-action">View Offer Letters</a>
+                        <a href="{{ url_for('job.create_job') }}" class="list-group-item list-group-item-action">Create New Job</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <!-- Recent Activity -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Recent Users</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for user in recent_users %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ user.name }}</h6>
+                                <small>{{ user.created_date.strftime('%m/%d/%Y') }}</small>
+                            </div>
+                            <p class="mb-1">{{ user.email }}</p>
+                            <small>Role: {{ user.role }}</small>
+                        </div>
+                        {% else %}
+                        <div class="list-group-item">No recent users</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Recent Jobs</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for job in recent_jobs %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ job.title }}</h6>
+                                <small>{{ job.created_date.strftime('%m/%d/%Y') }}</small>
+                            </div>
+                            <p class="mb-1">{{ job.company }}</p>
+                            <small>{{ job.location }}</small>
+                        </div>
+                        {% else %}
+                        <div class="list-group-item">No recent jobs</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Recent Resumes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for resume in recent_resumes %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ resume.candidate_name or 'Unknown' }}</h6>
+                                <small>{{ resume.upload_date.strftime('%m/%d/%Y') }}</small>
+                            </div>
+                            <p class="mb-1">{{ resume.filename }}</p>
+                            <small>Uploaded by: {{ resume.user.email }}</small>
+                        </div>
+                        {% else %}
+                        <div class="list-group-item">No recent resumes</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

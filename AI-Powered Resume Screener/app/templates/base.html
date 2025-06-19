@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-Powered Resume Screener - Match your resume with job descriptions using advanced AI technology">
+    <title>{% block title %}Resume Screener{% endblock %} | AI-Powered Resume Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% if current_user.is_authenticated %}{% if current_user.is_admin() %}{{ url_for('admin.dashboard') }}{% else %}{{ url_for('resume.dashboard') }}{% endif %}{% else %}{{ url_for('auth.login') }}{% endif %}">
+                <div class="brand-icon me-2 d-flex align-items-center justify-content-center">
+                    <i class="bi bi-file-earmark-person"></i>
+                </div>
+                <span>Resume Screener</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                    {% if current_user.is_admin() %}
+                    <!-- Admin Navigation -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}">
+                            <i class="bi bi-speedometer2 me-1"></i> Admin Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'admin.users' %}active{% endif %}" href="{{ url_for('admin.users') }}">
+                            <i class="bi bi-people me-1"></i> Manage Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'admin.all_jobs' %}active{% endif %}" href="{{ url_for('admin.all_jobs') }}">
+                            <i class="bi bi-briefcase me-1"></i> Manage Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'admin.all_resumes' %}active{% endif %}" href="{{ url_for('admin.all_resumes') }}">
+                            <i class="bi bi-file-text me-1"></i> View Resumes
+                        </a>
+                    </li>
+                    {% else %}
+                    <!-- Client Navigation -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'resume.dashboard' %}active{% endif %}" href="{{ url_for('resume.dashboard') }}">
+                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'job.list_jobs' %}active{% endif %}" href="{{ url_for('job.list_jobs') }}">
+                            <i class="bi bi-briefcase me-1"></i> View Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'resume.list_resumes' %}active{% endif %}" href="{{ url_for('resume.list_resumes') }}">
+                            <i class="bi bi-file-text me-1"></i> My Resumes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'resume.upload_resume' %}active{% endif %}" href="{{ url_for('resume.upload_resume') }}">
+                            <i class="bi bi-upload me-1"></i> Upload Resume
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item dropdown ms-2">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="avatar-circle me-2 {% if current_user.is_admin() %}bg-danger{% endif %}">
+                                <span class="initials">{{ current_user.name[:1] }}</span>
+                            </div>
+                            <span class="d-none d-md-inline">{{ current_user.name }}</span>
+                            {% if current_user.is_admin() %}
+                            <span class="badge bg-danger ms-1">Admin</span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('auth.profile') }}">
+                                    <i class="bi bi-person me-2"></i> Profile
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'auth.login' %}active{% endif %}" href="{{ url_for('auth.login') }}">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'auth.register' %}active{% endif %}" href="{{ url_for('auth.register') }}">
+                            <i class="bi bi-person-plus me-1"></i> Register
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                        <div class="d-flex align-items-center">
+                            {% if category == 'success' %}
+                                <div class="alert-icon bg-success-subtle rounded-circle p-2 me-3">
+                                    <i class="bi bi-check-circle text-success"></i>
+                                </div>
+                            {% elif category == 'danger' %}
+                                <div class="alert-icon bg-danger-subtle rounded-circle p-2 me-3">
+                                    <i class="bi bi-exclamation-triangle text-danger"></i>
+                                </div>
+                            {% elif category == 'warning' %}
+                                <div class="alert-icon bg-warning-subtle rounded-circle p-2 me-3">
+                                    <i class="bi bi-exclamation-circle text-warning"></i>
+                                </div>
+                            {% elif category == 'info' %}
+                                <div class="alert-icon bg-info-subtle rounded-circle p-2 me-3">
+                                    <i class="bi bi-info-circle text-info"></i>
+                                </div>
+                            {% endif %}
+                            <div>{{ message }}</div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="py-4">
+        {% block content %}{% endblock %}
+    </main>
+    
+    {% block extra_js %}{% endblock %}
+
+    <footer class="footer py-4 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-start">
+                        <div class="brand-icon me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                            <i class="bi bi-file-earmark-person" style="font-size: 1rem;"></i>
+                        </div>
+                        <span class="fw-semibold text-primary">Resume Screener</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                    <p class="mb-0">&copy; 2025 AI-Powered Resume Screener</p>
+                </div>
+                <div class="col-md-4 text-center text-md-end">
+                    <div class="d-flex justify-content-center justify-content-md-end gap-3">
+                        <a href="#" class="text-secondary hover-text-primary"><i class="bi bi-github"></i></a>
+                        <a href="#" class="text-secondary hover-text-primary"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="text-secondary hover-text-primary"><i class="bi bi-twitter-x"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <ul class="list-inline mb-0">
+                        <li class="list-inline-item me-3">
+                            <a href="{{ url_for('static', filename='about.html') }}" class="text-secondary hover-text-primary">About</a>
+                        </li>
+                        <li class="list-inline-item me-3">
+                            <a href="{{ url_for('static', filename='privacy.html') }}" class="text-secondary hover-text-primary">Privacy Policy</a>
+                        </li>
+                        <li class="list-inline-item me-3">
+                            <a href="{{ url_for('static', filename='terms.html') }}" class="text-secondary hover-text-primary">Terms of Service</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="{{ url_for('static', filename='contact.html') }}" class="text-secondary hover-text-primary">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

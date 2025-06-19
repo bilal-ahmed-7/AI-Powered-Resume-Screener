@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login | AI-Powered Resume Screener{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">Admin Login</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i> 
+                    This login is for administrators only. If you are a client, please use the <a href="{{ url_for('auth.login', role='client') }}">client login</a> instead.
+                </div>
+                
+                <form method="POST" action="{{ url_for('auth.login', role='admin') }}">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="admin@gmail.com" required>
+                        <small class="form-text text-muted">Enter your admin email address</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" value="admin123" required>
+                        <small class="form-text text-muted">Enter your admin password</small>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-danger">Login as Admin</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <p class="mb-0">
+                    <a href="{{ url_for('auth.login', role='client') }}" class="btn btn-sm btn-outline-primary">Switch to Client Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

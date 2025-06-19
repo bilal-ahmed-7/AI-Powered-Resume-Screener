@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Offer Letter{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Offer Letter</h1>
+        <a href="{{ url_for('resume.list_offer_letters') }}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Offer Letters
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Offer Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <h6 class="text-muted mb-1">Position</h6>
+                            <p class="mb-0 fw-bold">{{ offer_letter.job.title }}</p>
+                        </div>
+                        <div>
+                            <h6 class="text-muted mb-1">Company</h6>
+                            <p class="mb-0 fw-bold">{{ offer_letter.job.company }}</p>
+                        </div>
+                        <div>
+                            <h6 class="text-muted mb-1">Date Received</h6>
+                            <p class="mb-0">{{ offer_letter.created_date.strftime('%b %d, %Y') }}</p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="offer-letter-content p-4 bg-light rounded">
+                        <div style="white-space: pre-wrap;">{{ offer_letter.content }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if offer_letter.status == 'sent' %}
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Your Response</h5>
+                </div>
+                <div class="card-body">
+                    <p>Please respond to this offer letter:</p>
+                    <form action="{{ url_for('resume.respond_to_offer_letter', letter_id=offer_letter.id) }}" method="post">
+                        <div class="d-flex gap-3">
+                            <button type="submit" name="response" value="accepted" class="btn btn-success flex-grow-1">
+                                <i class="bi bi-check-circle me-2"></i>Accept Offer
+                            </button>
+                            <button type="submit" name="response" value="rejected" class="btn btn-danger flex-grow-1">
+                                <i class="bi bi-x-circle me-2"></i>Decline Offer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Your Response</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert {% if offer_letter.status == 'accepted' %}alert-success{% else %}alert-danger{% endif %} mb-0">
+                        <div class="d-flex align-items-center">
+                            <i class="bi {% if offer_letter.status == 'accepted' %}bi-check-circle-fill{% else %}bi-x-circle-fill{% endif %} me-3 fs-4"></i>
+                            <div>
+                                <h5 class="alert-heading mb-1">You have {% if offer_letter.status == 'accepted' %}accepted{% else %}declined{% endif %} this offer</h5>
+                                <p class="mb-0">Response date: {{ offer_letter.response_date.strftime('%b %d, %Y') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Resume Information</h5>
+                </div>
+                <div class="card-body">
+                    <h6>{{ offer_letter.resume.candidate_name }}</h6>
+                    <p class="text-muted mb-3">
+                        {{ offer_letter.resume.email }}<br>
+                        {{ offer_letter.resume.phone }}
+                    </p>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1">Skills</h6>
+                        <div>
+                            {% for skill in offer_letter.resume.skills.split(',') %}
+                            <span class="badge bg-primary me-1 mb-1">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <a href="{{ url_for('resume.view_resume', resume_id=offer_letter.resume.id) }}" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-file-earmark-person me-2"></i>View Full Resume
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button onclick="window.print()" class="btn btn-outline-dark">
+                            <i class="bi bi-printer me-2"></i>Print Offer Letter
+                        </button>
+                        <a href="mailto:?subject=Job Offer for {{ offer_letter.job.title }}&body={{ offer_letter.content|replace('\n', '%0D%0A') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-envelope me-2"></i>Email Offer Letter
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

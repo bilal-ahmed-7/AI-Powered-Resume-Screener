@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Create Job | AI-Powered Resume Screener{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Create New Job Posting</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('job.create_job') }}">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Job Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="company" class="form-label">Company</label>
+                        <input type="text" class="form-control" id="company" name="company" value="{{ current_user.company }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Job Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="required_skills" class="form-label">Required Skills</label>
+                        <textarea class="form-control" id="required_skills" name="required_skills" rows="3" placeholder="Enter skills separated by commas"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="required_experience" class="form-label">Required Experience</label>
+                        <input type="text" class="form-control" id="required_experience" name="required_experience" placeholder="e.g. 3+ years">
+                    </div>
+                    <div class="mb-3">
+                        <label for="required_education" class="form-label">Required Education</label>
+                        <input type="text" class="form-control" id="required_education" name="required_education" placeholder="e.g. Bachelor's degree in Computer Science">
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" placeholder="e.g. Remote, New York, NY">
+                    </div>
+                    <div class="mb-3">
+                        <label for="job_type" class="form-label">Job Type</label>
+                        <select class="form-select" id="job_type" name="job_type">
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Internship">Internship</option>
+                            <option value="Temporary">Temporary</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="salary_range" class="form-label">Salary Range</label>
+                        <input type="text" class="form-control" id="salary_range" name="salary_range" placeholder="e.g. $80,000 - $100,000">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Create Job</button>
+                        <a href="{{ url_for('resume.dashboard') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

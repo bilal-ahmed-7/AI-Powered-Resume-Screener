@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Resume-Job Match Results{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Match Results</h1>
+        <div>
+            <a href="{{ url_for('resume.view_resume', resume_id=resume.id) }}" class="btn btn-secondary me-2">Back to Resume</a>
+            <a href="{{ url_for('job.view_job', job_id=job.id) }}" class="btn btn-secondary">View Job</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Resume</h5>
+                </div>
+                <div class="card-body">
+                    <h6>{{ resume.candidate_name }}</h6>
+                    <p><strong>Email:</strong> {{ resume.email }}</p>
+                    <p><strong>Skills:</strong> {{ resume.skills }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Job</h5>
+                </div>
+                <div class="card-body">
+                    <h6>{{ job.title }}</h6>
+                    <p><strong>Company:</strong> {{ job.company }}</p>
+                    <p><strong>Required Skills:</strong> {{ job.required_skills }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Match Score: {{ match_score }}%</h4>
+        </div>
+        <div class="card-body">
+            <div class="progress mb-4" style="height: 30px;">
+                <div class="progress-bar {{ 'bg-success' if match_score >= 70 else 'bg-warning' if match_score >= 40 else 'bg-danger' }}" 
+                     role="progressbar" style="width: {{ match_score }}%;" 
+                     aria-valuenow="{{ match_score }}" aria-valuemin="0" aria-valuemax="100">
+                    {{ match_score }}%
+                </div>
+            </div>
+
+            <h5>Match Details</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Score</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category, details in match_details.items() %}
+                        <tr>
+                            <td>{{ category|title }}</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar {{ 'bg-success' if details.score >= 70 else 'bg-warning' if details.score >= 40 else 'bg-danger' }}" 
+                                         role="progressbar" style="width: {{ details.score }}%;" 
+                                         aria-valuenow="{{ details.score }}" aria-valuemin="0" aria-valuemax="100">
+                                        {{ details.score }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ details.explanation }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">AI Recommendations</h5>
+        </div>
+        <div class="card-body">
+            {% if match_score >= 80 %}
+                <div class="alert alert-success">
+                    <h6 class="alert-heading">Excellent Match!</h6>
+                    <p>This candidate is an excellent match for the position. We recommend proceeding with an interview as soon as possible.</p>
+                </div>
+            {% elif match_score >= 60 %}
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">Good Match</h6>
+                    <p>This candidate is a good match for the position. Consider scheduling an interview to further assess their fit.</p>
+                </div>
+            {% elif match_score >= 40 %}
+                <div class="alert alert-warning">
+                    <h6 class="alert-heading">Potential Match</h6>
+                    <p>This candidate has some relevant qualifications but may not be an ideal fit. Consider looking at their resume in more detail.</p>
+                </div>
+            {% else %}
+                <div class="alert alert-danger">
+                    <h6 class="alert-heading">Poor Match</h6>
+                    <p>This candidate does not appear to be a good match for this position based on the requirements.</p>
+                </div>
+            {% endif %}
+            
+            <h6 class="mt-4">Areas for Improvement:</h6>
+            <ul>
+                {% for category, details in match_details.items() %}
+                    {% if details.score < 60 %}
+                        <li><strong>{{ category|title }}:</strong> {{ details.improvement_suggestion }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

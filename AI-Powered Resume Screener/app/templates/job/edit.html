@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Job{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Edit Job</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('job.edit_job', job_id=job.id) }}">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Job Title</label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{ job.title }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="company" class="form-label">Company</label>
+                            <input type="text" class="form-control" id="company" name="company" value="{{ job.company }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Job Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required>{{ job.description }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="required_skills" class="form-label">Required Skills (comma separated)</label>
+                            <input type="text" class="form-control" id="required_skills" name="required_skills" value="{{ job.required_skills }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="required_experience" class="form-label">Required Experience</label>
+                            <input type="text" class="form-control" id="required_experience" name="required_experience" value="{{ job.required_experience }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="required_education" class="form-label">Required Education</label>
+                            <input type="text" class="form-control" id="required_education" name="required_education" value="{{ job.required_education }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="location" name="location" value="{{ job.location }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="job_type" class="form-label">Job Type</label>
+                            <select class="form-select" id="job_type" name="job_type">
+                                <option value="Full-time" {% if job.job_type == 'Full-time' %}selected{% endif %}>Full-time</option>
+                                <option value="Part-time" {% if job.job_type == 'Part-time' %}selected{% endif %}>Part-time</option>
+                                <option value="Contract" {% if job.job_type == 'Contract' %}selected{% endif %}>Contract</option>
+                                <option value="Internship" {% if job.job_type == 'Internship' %}selected{% endif %}>Internship</option>
+                                <option value="Remote" {% if job.job_type == 'Remote' %}selected{% endif %}>Remote</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="salary_range" class="form-label">Salary Range</label>
+                            <input type="text" class="form-control" id="salary_range" name="salary_range" value="{{ job.salary_range }}">
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('admin.view_job', job_id=job.id) }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Update Job</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

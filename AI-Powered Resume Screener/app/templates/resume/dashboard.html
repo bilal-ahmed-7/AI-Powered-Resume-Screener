@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Welcome Section with Stats -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar-circle" style="width: 50px; height: 50px; font-size: 20px;">
+                            <span class="initials">{{ current_user.name[:1] }}</span>
+                        </div>
+                        <div class="ms-3">
+                            <h2 class="mb-0">Welcome, {{ current_user.name }}</h2>
+                            <p class="text-muted mb-0">{{ current_user.company }}</p>
+                        </div>
+                    </div>
+                    <p class="lead mb-0">Your AI-powered resume screening dashboard</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 bg-primary text-white">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Today's Date</h6>
+                            <h4 class="mb-0">{{ current_date }}</h4>
+                        </div>
+                        <i class="bi bi-calendar3 fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                            <i class="bi bi-file-earmark-person text-primary fs-4"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Resumes</h5>
+                    </div>
+                    <p class="display-4 text-center my-4">{{ resumes|length|default(0) }}</p>
+                    <div class="d-grid">
+                        <a href="{{ url_for('resume.list_resumes') }}" class="btn btn-primary">
+                            <i class="bi bi-list me-2"></i>Manage Resumes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                            <i class="bi bi-briefcase text-success fs-4"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Job Postings</h5>
+                    </div>
+                    <p class="display-4 text-center my-4">{{ jobs|length|default(0) }}</p>
+                    <div class="d-grid">
+                        <a href="{{ url_for('job.list_jobs') }}" class="btn btn-success">
+                            <i class="bi bi-list me-2"></i>Manage Jobs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                            <i class="bi bi-check2-circle text-warning fs-4"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Matches</h5>
+                    </div>
+                    <p class="display-4 text-center my-4">{{ matches|default(0) }}</p>
+                    <div class="d-grid">
+                        <a href="#" class="btn btn-warning text-white">
+                            <i class="bi bi-eye me-2"></i>View Matches
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                            <i class="bi bi-envelope-paper text-info fs-4"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Offer Letters</h5>
+                    </div>
+                    {% set offer_count = namespace(count=0) %}
+                    {% for resume in resumes %}
+                        {% set offer_count.count = offer_count.count + resume.offer_letters.count() %}
+                    {% endfor %}
+                    <p class="display-4 text-center my-4">{{ offer_count.count }}</p>
+                    <div class="d-grid">
+                        <a href="{{ url_for('resume.list_offer_letters') }}" class="btn btn-info text-white">
+                            <i class="bi bi-envelope-open me-2"></i>View Offers
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="{{ url_for('resume.upload_resume') }}" class="btn btn-outline-primary d-flex align-items-center justify-content-center p-3 w-100">
+                                <i class="bi bi-upload me-2 fs-5"></i>
+                                <span>Upload Resume</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('resume.list_offer_letters') }}" class="btn btn-outline-info d-flex align-items-center justify-content-center p-3 w-100">
+                                <i class="bi bi-envelope-paper me-2 fs-5"></i>
+                                <span>View Offer Letters</span>
+                            </a>
+                        </div>
+                        <!-- Create Job button removed - admin only feature -->
+                        <!-- Analytics button removed - admin only feature -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Job Postings</h5>
+                    <a href="{{ url_for('job.list_jobs') }}" class="btn btn-sm btn-link text-decoration-none">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    {% if jobs %}
+                    <ul class="list-group list-group-flush">
+                        {% for job in jobs[:3] %}
+                        <li class="list-group-item px-4 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ job.title }}</h6>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-light text-dark me-2">{{ job.job_type }}</span>
+                                        <small class="text-muted">Posted: {{ job.created_date.strftime('%b %d, %Y') }}</small>
+                                    </div>
+                                </div>
+                                <a href="{{ url_for('job.view_job', job_id=job.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye me-1"></i> View
+                                </a>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="text-center p-4">
+                        <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/icons/briefcase-fill.svg" alt="No jobs" width="48" height="48" class="mb-3 text-muted opacity-50">
+                        <p class="mb-3">No job postings yet</p>
+                        <a href="{{ url_for('job.create_job') }}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-2"></i>Create Job Posting
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Resumes</h5>
+                    <a href="{{ url_for('resume.list_resumes') }}" class="btn btn-sm btn-link text-decoration-none">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    {% if resumes %}
+                    <ul class="list-group list-group-flush">
+                        {% for resume in resumes[:3] %}
+                        <li class="list-group-item px-4 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ resume.candidate_name }}</h6>
+                                    <div class="d-flex align-items-center">
+                                        <small class="text-muted">{{ resume.email }}</small>
+                                        <span class="mx-2">•</span>
+                                        <small class="text-muted">Uploaded: {{ resume.upload_date.strftime('%b %d, %Y') }}</small>
+                                    </div>
+                                </div>
+                                <a href="{{ url_for('resume.view_resume', resume_id=resume.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye me-1"></i> View
+                                </a>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="text-center p-4">
+                        <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/icons/file-earmark-person-fill.svg" alt="No resumes" width="48" height="48" class="mb-3 text-muted opacity-50">
+                        <p class="mb-3">No resumes uploaded yet</p>
+                        <a href="{{ url_for('resume.upload_resume') }}" class="btn btn-primary">
+                            <i class="bi bi-upload me-2"></i>Upload Resume
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
