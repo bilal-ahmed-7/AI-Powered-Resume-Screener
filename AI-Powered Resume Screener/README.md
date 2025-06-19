@@ -169,17 +169,9 @@ ai-powered-resume-screener/
 - Audit trails for all system actions
 - Two-factor authentication for enhanced security
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contributors
-
-- [Your Name] - Initial development and maintenance
-
 ## Acknowledgments
 
 - Flask and SQLAlchemy communities for excellent documentation
 - Bootstrap team for the responsive UI framework
 - Open source NLP libraries that made the AI features possible
-#
+
